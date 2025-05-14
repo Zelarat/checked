@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="results-container">
+    <h1 class="page-title">{{ poll.title }} Results</h1>
+
+    <!-- Таблица выше графиков -->
+    <div class="table-responsive">
+        <table id="resultsTable" class="results-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    {% for question in poll.questions %}
+                    <th>{{ question.text }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for answers in poll.answer %}
+                <tr>
+                    <td>{{ answers.timestamp.strftime('%H:%M:%S %d-%m-%Y') }}</td>
+                    <td>{{ answers.user.username if answers.user_id else 'Anonymous' }}</td>
+                    {% for question in poll.questions %}
+                    <td>
+                        {% set answer = poll.answer|selectattr('question_id', 'equalto', question.id)|first %}
+                        {{ answers.content if answer else 'N/A' }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Графики ниже таблицы -->
+    <div class="charts">
+        <h2 class="charts-title">Визуализация ответов</h2>
+        {% for question in questions %}
+        {% if question.type != 'text' %}
+        <div class="chart-container">
+            <h3 class="chart-title">{{ question.text }}</h3>
+            <canvas id="chart-{{ question.id }}"></canvas>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+
+</script>
+{% endblock %}
